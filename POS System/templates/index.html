@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>POS System</title>
+    <link rel = "stylesheet" href = {{ url_for('static', filename='index.css')}}/>
+    <script>
+        var linkserver = "http://127.0.0.1:5000";
+    </script>
+  </head>
+  <body>
+    <div class = "left">
+        <div class = "typebar">
+            <div>
+                <a href = "{{linkserver}}/rice/" >
+                    <img src = "https://cdn.kfc.com.my/images/menu/delivery/delivery_SetF-1pc-Rice-Combo.png">
+                </a>
+                <a href = "{{linkserver}}/chicken/">
+                    <img src = "https://www.eatthis.com/wp-content/uploads/sites/4//media/images/ext/966368714/kfc-original-chicken-recipe.jpg?quality=82&strip=1&resize=640%2C360">
+                </a>
+                <a href = "{{linkserver}}/snack/">
+                    <img src = "https://cdn-images-fishry.azureedge.net/product/Snack-Bucket-500x360-96c84b3-kfc.png">
+                </a>
+                <a href = "{{linkserver}}/drink/" style="margin-right:0;">
+                    <img src = "https://d12n9cpx6835mo.cloudfront.net/dewfreeze_web_thumb.jpg?v=178.6">
+                </a>
+            </div>
+
+            <div class = "texttype">
+                <a class = "a1" href = "{{linkserver}}/rice/">Rice and Burger</a>
+                <a class = "a2" href = "{{linkserver}}/chicken/">Chicken</a>
+                <a class = "a3" href = "{{linkserver}}/snack/">Snack</a>
+                <a class = "a4" href = "{{linkserver}}/drink/">Drink</a>
+            </div>
+        </div>
+
+        <!-- <div class = "tablecontain">
+            <table class = "infotable">
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+                {% for item in food %}
+                    <tr>
+                        <td>{{item[0]}}</td>
+                        <td>{{item[1]}}</td>
+                        <td>
+                            <a href = "/choose/{{item[0]}}">Choose</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+              </table>
+        </div> -->
+
+        <div class = "firstfood">
+            <img src = "{{food[0][3]}}">
+            <div class = "container">
+                <h4>
+                    {{food[0][0]}} <br>
+                    {{food[0][1]}} VND
+                </h4>
+            </div>
+            <div class = "buttonChoose">
+                <button id="myBtn1">Order</button>
+            </div>
+            
+        </div>
+
+        <div class = "secondfood">
+            <img src = "{{food[1][3]}}">
+            <div class = "container">
+                <h4>
+                    {{food[1][0]}} <br>
+                    {{food[1][1]}} VND
+                </h4>
+            </div>
+            <div class = "buttonChoose">
+                <button id="myBtn2">Order</button>
+            </div>
+            
+        </div>
+
+        <div class = "thirdfood">
+            <img src = "{{food[2][3]}}">
+            <div class = "container">
+                <h4>
+                    {{food[2][0]}} <br>
+                    {{food[2][1]}} VND
+                </h4>
+            </div>
+            <div class = "buttonChoose">
+                <button id="myBtn3">Order</button>
+            </div>
+        </div>
+
+        <div class = "inforbar">
+            <h5>Back to home</h5>
+        </div>
+        
+        <div class = "logo">
+            <a href = "/">
+                <img src = "https://upload.wikimedia.org/wikipedia/vi/thumb/7/7e/Logo_KFC.svg/1200px-Logo_KFC.svg.png">
+            </a>
+        </div>
+
+        {% if current_user.is_authenticated %}
+
+        <div class = "Logout">
+            <a class = "a1" href = "/history/">History</a>
+            <a class = "a1" href = "#">Profile</a>
+            <a href = /logout>Logout</a>
+        </div>
+        {% else %}
+        <div class = "Log">
+            <a class = "a1" href = "/login"> Login</a>
+            <a href = "/register"> Register</a>
+        </div>
+
+        {% endif %}
+
+        <div class = searchBox>
+            <form>
+                <input type="text" name="searchQuery" placeholder="Search food">
+                <button type="submit"><img class = "searchicon" src = "https://lh3.googleusercontent.com/proxy/g87posCwJ7PcEBXOaSYDEkJ9SHu0PFgPT_YfMk7uk7PcZsSrbHWNU9yjHLxIxIavnFcCGrQOSD3vmddalziHiZe7xj4i-FqQNw"> </button>
+            </form>
+        </div>
+
+
+    </div>
+
+    {% if current_user.is_authenticated %}
+    <div class = "right">
+        <h5 class = "yourcart">Your cart ({{number[0]}})</h5>
+        <a href = "/removeall/" class = "clearall">Clear all</a>
+        <div class = "listcart">
+        {% for i in range(1, number[0] + 1 ) %}
+        {% if number[0] >= i %}
+        <div class = "bill{{i}}">
+            <img  class = "billimg" src= "{{bill[i-1][3]}}">
+            <h5 class = billname>{{bill[i-1][1]}}: {{bill[i-1][2]}}</h5>
+            <a href = "/remove/{{bill[i-1][4]}}"><button class = "xbutton">X</button></a>
+        </div>
+        {% endif %}
+        {% endfor %}
+        </div>
+        <h5 class = "totaltext">Total:</h5>
+        <h5 class = "totalprice">{{total}} VND</h5>
+        {% if total == 0 %}
+        <a href = "/updatehistory/"><button onclick="paymentfail()" class = "payment">Payment</button></a>
+        {% else %}
+        <a href = "/updatehistory/"><button onclick="payment()" class = "payment">Payment</button></a>
+        {% endif %}
+
+    </div>
+    {% endif %}
+
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+          <div class = "topmodal">
+              <h5>ADD TO CART</h5>
+          </div>
+          <div class = "bodymodal">
+              <h5>Name&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Price</h5>
+              {% for i in range(0,3) %}
+                <div id="myModal{{i}}" class = "modal{{i}}">
+                    <img src = "{{food[i][3]}}">
+                    <h5>{{food[i][0]}}</h5>
+                    <p>{{food[i][1]}}VND</p>
+                    <div class = "des{{i}}">
+                        <p>{{food[i][4]}}</p>
+                    </div>
+                    {% if current_user.is_authenticated %}
+                    <div class = "quantitybar">
+                        <h4>Quantity</h4>
+                        <form class = "quanform" action="/" method = "POST">
+                            <input class = "foodtype" type = "text" value = {{food[i][5]}} name = "id">
+                            <input class = "numberform" type="number" name="quantity" min="0" max="10" step="1" value="1">
+                            <input class = "orderbutton" type="submit" value="Order ">
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class = "quantitybar">
+                        <h4>Quantity</h4>
+                        <div class = "quanform" action="/" method = "POST">
+                            <input class = "foodtype" type = "text" value = {{food[i][5]}} name = "id">
+                            <input class = "numberform" type="number" name="quantity" min="0" max="10" step="1" value="1">
+                            <button onclick="myFunction()" class = "orderbutton">Order</button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>   
+                
+                {% endfor %}
+                
+          </div>
+          <span class="close">&times;</span>
+          <p>Some text in the Modal..</p>
+        </div>
+      
+      </div>
+
+    
+      <script>
+        // Get the modal
+        var modal = document.getElementById("myModal");
+        var modal0 = document.getElementById("myModal0");
+        var modal1 = document.getElementById("myModal1");
+        var modal2 = document.getElementById("myModal2");
+        
+        // Get the button that opens the modal
+        var btn1 = document.getElementById("myBtn1");
+        var btn2 = document.getElementById("myBtn2");
+        var btn3 = document.getElementById("myBtn3");
+        
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+        
+        // When the user clicks the button, open the modal 
+        btn1.onclick = function() {
+          modal.style.display = "block";
+          modal0.style.display = "block";
+        }
+        btn2.onclick = function() {
+          modal.style.display = "block";
+          modal1.style.display = "block";
+        }
+        btn3.onclick = function() {
+          modal.style.display = "block";
+          modal2.style.display = "block";
+        }
+        
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+          modal.style.display = "none";
+          modal0.style.display = "none";
+          modal1.style.display = "none";
+          modal2.style.display = "none";
+        }
+        
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+            modal0.style.display = "none";
+            modal1.style.display = "none";
+            modal2.style.display = "none";
+          }
+        }
+
+        function myFunction() {
+            alert("Please login before ordering!");
+        }
+
+        function payment() {
+            alert("Payment Successful");
+        }
+
+        function paymentfail() {
+            alert("Please choose at least one dish!");
+        }
+
+        
+        </script>
+  </body>
+</html>

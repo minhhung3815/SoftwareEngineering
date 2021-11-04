@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>POS System</title>
+    <link rel = "stylesheet" href = {{ url_for('static', filename='index.css')}}/>
+    <link rel = "stylesheet" href = {{ url_for('static', filename='history.css')}}/>
+    <script>
+        var linkserver = "http://127.0.0.1:5000";
+    </script>
+  </head>
+<body>
+    <div class = "inforbarhis">
+        <h5>Back to home</h5>
+    </div>
+    
+    <div class = "logo">
+        <a href = "/">
+            <img src = "https://upload.wikimedia.org/wikipedia/vi/thumb/7/7e/Logo_KFC.svg/1200px-Logo_KFC.svg.png">
+        </a>
+    </div>
+
+    
+
+    <div class = "Logouthis">
+        <a class = "a1" href = "#">Profile</a>
+        <a href = /logout>Logout</a>
+    </div>
+    
+
+    <div class = "hiscontent">
+        <h3 style = "text-align: center;">History</h3>
+        {% for item in his %}
+        <div class = "hisitem">
+            <div class = "timeprice">
+                <h4 class = "time">Time: {{item[2]}}</h4>
+                <h4 class = "price">Price: {{item[3]}} VND</h4>
+            </div>
+            <img src = "https://www.pngall.com/wp-content/uploads/5/Empty-Red-Shopping-Cart-PNG-Images.png">
+            <div class = "detail">
+                {% for detail in his_detail %}
+                {% if detail[0] == item[0] %}
+                    <h4>{{detail[1]}} : {{detail[2]}}</h4>
+                {% endif %}
+                {% endfor %}
+            </div>
+            <div class = "feedback">
+                <button>Rating</button>
+            </div>
+        </div>
+        {% endfor %}
+        <div class = "extend">
+
+        </div>    
+    </div>
+
+</body>
+</html>
