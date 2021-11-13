@@ -382,6 +382,8 @@ def drink():
 @app.route('/search')
 def search():
     # query = request.args.get('query')
+    # if query is None:
+    #     abort(400)
 
     con = sqlite3.connect('test.db')
     con.row_factory = sqlite3.Row
@@ -402,6 +404,15 @@ def search():
         total=total,
         chunker=chunker,
     )
+
+
+@app.route('/cart/clear', methods=["POST"])
+def clear_cart():
+    con = sqlite3.connect('test.db')
+    con.execute("DELETE FROM cart WHERE id = (?)", current_user.get_id())
+    con.commit()
+    con.close()
+    return '', 204
 
 
 if __name__ == '__main__':
