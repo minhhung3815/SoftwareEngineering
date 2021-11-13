@@ -12,13 +12,13 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from forms import LoginForm, RegisterForm
 
 app = Flask(__name__)
-app.secret_key = ['832790179812']
+app.secret_key = ["832790179812"]
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-login_manager.login_message = 'Please login to access this page!'
+login_manager.login_view = "login"
+login_manager.login_message = "Please login to access this page!"
 login_manager.login_message_category = "warning"
-db = sqlite3.connect('test.db', check_same_thread=False)
+db = sqlite3.connect("test.db", check_same_thread=False)
 db.close()
 
 
@@ -52,7 +52,7 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def load_user(user_id):
-    conn = sqlite3.connect('test.db')
+    conn = sqlite3.connect("test.db")
     curs = conn.cursor()
     curs.execute("SELECT * from user where user_id= (?)", (user_id,))
     lu = curs.fetchone()
@@ -62,7 +62,7 @@ def load_user(user_id):
         return User(int(lu[0]), lu[1], lu[2], lu[3])
 
 
-@app.route('/', methods=["POST", "GET"])
+@app.route("/", methods=["POST", "GET"])
 def index():
 
     if request.method == "POST":
@@ -72,7 +72,7 @@ def index():
         return redirect(url_for("choose", number=number, id=id))
 
     else:
-        conn = sqlite3.connect('test.db')
+        conn = sqlite3.connect("test.db")
         curs = conn.cursor()
         curs = conn.execute("SELECT * FROM FOOD")
         food = curs.fetchall()
@@ -97,9 +97,9 @@ def index():
         )
 
 
-@app.route('/choose/<number>/<id>/')
+@app.route("/choose/<number>/<id>/")
 def choose(number, id):
-    conn = sqlite3.connect('test.db')
+    conn = sqlite3.connect("test.db")
     curs = conn.cursor()
 
     curs = conn.execute("select * from FOOD where ID = (?)", (id,))
@@ -127,15 +127,15 @@ def choose(number, id):
     return redirect("/")
 
 
-@app.route('/remove/<id>', methods=["GET", "POST"])
+@app.route("/remove/<id>", methods=["GET", "POST"])
 def remove(id):
-    conn = sqlite3.connect('test.db')
+    conn = sqlite3.connect("test.db")
     conn.execute("delete from CART where food_id = (?)", (id,))
     conn.commit()
     return redirect("/")
 
 
-@app.route('/updatehistory/', methods=["POST", "GET"])
+@app.route("/updatehistory/", methods=["POST", "GET"])
 @login_required
 def updatehistory():
     id = current_user.get_id()
@@ -167,10 +167,10 @@ def updatehistory():
     cur.execute("delete from CART where id = (?)", (id,))
     con.commit()
     con.close()
-    return redirect('/')
+    return redirect("/")
 
 
-@app.route('/history/', methods=["POST", "GET"])
+@app.route("/history/", methods=["POST", "GET"])
 @login_required
 def history():
     con = sqlite3.connect("test.db")
@@ -185,15 +185,15 @@ def history():
     return render_template("history.html", his=his, his_detail=his_detail)
 
 
-@app.route('/removeall/')
+@app.route("/removeall/")
 def removeall():
-    conn = sqlite3.connect('test.db')
+    conn = sqlite3.connect("test.db")
     conn.execute("delete from CART")
     conn.commit()
     return redirect("/")
 
 
-@app.route('/profile', methods=["GET", "POST"])
+@app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
     if request.method == "POST":
@@ -205,34 +205,34 @@ def profile():
         cur.execute("insert into PROFILE(id, name, age)values(?,?,?)", (id, name, age))
         con.commit()
         con.close()
-        return redirect(url_for('profile'))
+        return redirect(url_for("profile"))
     else:
         con = sqlite3.connect("test.db")
         cur = con.cursor()
         cur.execute("select * from PROFILE where id=?", (current_user.get_id(),))
         data = cur.fetchone()
-        return render_template('profile.html', data=data)
+        return render_template("profile.html", data=data)
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        username = request.form['username']
-        email = request.form['email_address']
-        password = request.form['password1']
+        username = request.form["username"]
+        email = request.form["email_address"]
+        password = request.form["password1"]
         con = sqlite3.connect("test.db")
         cur = con.cursor()
         cur.execute("select username from user where username=?", (username,))
         data1 = cur.fetchone()
         if data1:
             flash("Username are already exists", "danger")
-            return redirect(url_for('register'))
+            return redirect(url_for("register"))
         cur.execute("select email from user where email=?", (email,))
         data2 = cur.fetchone()
         if data2:
             flash("Email are already exists", "danger")
-            return redirect(url_for('register'))
+            return redirect(url_for("register"))
         else:
             cur.execute(
                 "insert into user(username,email,password)values(?,?,?)",
@@ -240,14 +240,14 @@ def register():
             )
         con.commit()
         con.close()
-        return redirect(url_for('login'))
+        return redirect(url_for("login"))
     if form.errors != {}:
         for err_msg in form.errors.values():
-            flash(f'{err_msg}', category='danger')
-    return render_template('register.html', form=form)
+            flash(f"{err_msg}", category="danger")
+    return render_template("register.html", form=form)
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -261,30 +261,30 @@ def login():
                 form.password.data
             ):
                 login_user(user)
-                return redirect('/')
+                return redirect("/")
             else:
                 flash(
-                    f'Username or Password mismatch. Please try again!',
-                    category='danger',
+                    f"Username or Password mismatch. Please try again!",
+                    category="danger",
                 )
         else:
             flash(
-                f'Username or Password mismatch. Please try again!', category='danger'
+                f"Username or Password mismatch. Please try again!", category="danger"
             )
-    return render_template('login.html', form=form)
+    return render_template("login.html", form=form)
 
 
-@app.route('/logout')
+@app.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for("index"))
 
 
-@app.route('/rice/', methods=["GET", "POST"])
+@app.route("/rice/", methods=["GET", "POST"])
 def rice():
 
     params = ["Rice"]
-    conn = sqlite3.connect('test.db')
+    conn = sqlite3.connect("test.db")
     curs = conn.cursor()
     curs = conn.execute("SELECT * FROM FOOD WHERE Type = (?)", params)
     food = curs.fetchall()
@@ -304,11 +304,11 @@ def rice():
     )
 
 
-@app.route('/chicken/', methods=["GET", "POST"])
+@app.route("/chicken/", methods=["GET", "POST"])
 def chicken():
 
     params = ["Chicken"]
-    conn = sqlite3.connect('test.db')
+    conn = sqlite3.connect("test.db")
     curs = conn.cursor()
     curs = conn.execute("SELECT * FROM FOOD WHERE Type = (?)", params)
     food = curs.fetchall()
@@ -329,11 +329,11 @@ def chicken():
     )
 
 
-@app.route('/snack/', methods=["GET", "POST"])
+@app.route("/snack/", methods=["GET", "POST"])
 def snack():
 
     params = ["Snack"]
-    conn = sqlite3.connect('test.db')
+    conn = sqlite3.connect("test.db")
     curs = conn.cursor()
     curs = conn.execute("SELECT * FROM FOOD WHERE Type = (?)", params)
     food = curs.fetchall()
@@ -354,11 +354,11 @@ def snack():
     )
 
 
-@app.route('/drink/', methods=["GET", "POST"])
+@app.route("/drink/", methods=["GET", "POST"])
 def drink():
 
     params = ["Drink"]
-    conn = sqlite3.connect('test.db')
+    conn = sqlite3.connect("test.db")
     curs = conn.cursor()
     curs = conn.execute("SELECT * FROM FOOD WHERE Type = (?)", params)
     food = curs.fetchall()
@@ -379,13 +379,13 @@ def drink():
     )
 
 
-@app.route('/search')
+@app.route("/search")
 def search():
-    query = request.args.get('query')
+    query = request.args.get("query")
     if query is None:
         abort(400)
 
-    con = sqlite3.connect('test.db')
+    con = sqlite3.connect("test.db")
     con.row_factory = sqlite3.Row
     cur = con.execute("SELECT * FROM food WHERE food.name LIKE (?)", (f"%{query}%",))
     food = cur.fetchall()
@@ -393,7 +393,7 @@ def search():
     con.row_factory = sqlite3.Row
     cur = con.execute("SELECT * FROM cart WHERE id = (?)", (current_user.get_id(),))
     cart = cur.fetchall()
-    total = sum(item['amount'] * item['price'] for item in cart)
+    total = sum(item["amount"] * item["price"] for item in cart)
     con.close()
     return render_template(
         "search.html",
@@ -404,16 +404,16 @@ def search():
     )
 
 
-@app.route('/cart/clear', methods=["POST"])
+@app.route("/cart/clear", methods=["POST"])
 def clear_cart():
-    con = sqlite3.connect('test.db')
+    con = sqlite3.connect("test.db")
     con.execute("DELETE FROM cart WHERE id = (?)", (current_user.get_id(),))
     con.commit()
     con.close()
-    return '', 204
+    return "", 204
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
 
 
