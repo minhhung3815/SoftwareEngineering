@@ -381,19 +381,17 @@ def drink():
 
 @app.route('/search')
 def search():
-    # query = request.args.get('query')
-    # if query is None:
-    #     abort(400)
+    query = request.args.get('query')
+    if query is None:
+        abort(400)
 
     con = sqlite3.connect('test.db')
     con.row_factory = sqlite3.Row
-    cur = con.execute("SELECT * FROM food")
+    cur = con.execute("SELECT * FROM food WHERE food.name LIKE (?)", f"%{query}%")
     food = cur.fetchall()
 
     con.row_factory = sqlite3.Row
-    cur = con.execute(
-        "SELECT * FROM cart where id = (?)", current_user.get_id()
-    )
+    cur = con.execute("SELECT * FROM cart where id = (?)", current_user.get_id())
     cart = cur.fetchall()
     total = sum(item['amount'] * item['price'] for item in cart)
     con.close()
