@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>POS System</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<!-- Latest compiled and minified CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Latest compiled JavaScript -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"></script>
+
+	<style>
+.modal-dialog {
+	height: 50%; /* = 50% of the .modal-backdrop block = 50% of the screen */
+}
+.modal-content {
+  height: 100%; /* = 100% of the .modal-dialog block */
+}
+
+.center {
+	margin: auto;
+}
+
+.billimg{
+	width: 20%;
+	height: 80%;
+	border-radius: 10px;
+	top: 10%;
+	left: 2%;
+}
+	</style>
+</head>
+
+<body>
+	<header class="navbar navbar-expand-lg bg-light">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="/">
+				<img width="40" height="40" src="https://upload.wikimedia.org/wikipedia/vi/thumb/7/7e/Logo_KFC.svg/1200px-Logo_KFC.svg.png">
+			</a>
+			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Back to home</a>
+        </li>
+			</ul>
+			<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        {% if current_user.is_authenticated %}
+        <li class="nav-item">
+					<a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvas" role="button" aria-controls="offcanvas">
+						Cart({{ cart | length }})
+					</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/history/">History</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/logout">Logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="/login">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/register">Register</a>
+        </li>
+        {% endif %}
+      </ul>
+
+			<form class="d-flex">
+        <input class="form-control me-2" type="search" placeholder="Search food" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+		</div>
+	</header>
+
+	<div class="row">
+		{% for row in chunker(food, 4) %}
+		<div class="row">
+			{% for dish in row %}
+			<div class="col" style="margin: 10px;">
+				<div class="card shadow" style="width:400px">
+					<img class="card-img-top" src="{{ dish.path }}" alt="{{ dish.name }}">
+					<div class="card-body">
+						<h4 class="card-title text-center">{{ dish.name }}</h4>
+						<h4 class="card-text text-center">{{ dish.price }} VND</h4>
+						<!-- <a href="#" class="btn btn-danger">Order</a> -->
+					<div class="d-flex justify-content-center">
+					<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#food-detail-{{ dish.id }}">Order</button>
+					</div>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		{% endfor %}
+	</div>
+
+	{% if current_user.is_authenticated %}
+	<div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
+		<div class="offcanvas-header">
+			<h5 class="offcanvas-title" id="offcanvasLabel">Your cart({{ cart | length }})</h5>
+			<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+		</div>
+		<hr/>
+		<div class="offcanvas-body">
+			{% for item in cart %}
+			<div class="d-flex bd-highlight">
+				<img class="billimg" style="margin-right: 10px;" src="{{item.path}}">
+				<h5 class="flex-fill align-middle" style="margin: auto;">{{ item.food_name }}: {{item['amount']}}</h5>
+			<button type="button" class="btn-close text-reset" style="margin: auto;" aria-label="Remove"></button>
+			</div>
+			<hr/>
+			{% endfor %}
+		</div>
+			<div class="d-flex">
+        <h5 class="p-2 flex-fill">Total:</h5>
+        <h5 class="p-2 flex-fill text-end">{{total}} VND</h5>
+			</div>
+			<div class="row" style="margin-bottom: 10px;">
+				<div class="col-md-6 d-flex justify-content-center">
+					<button class="btn btn-outline-primary" style="margin=auto;text-align:center;" type="button">Clear all</button>
+				</div>
+				<div class="col-md-6 d-flex justify-content-center">
+					<button class="btn btn-primary" type="button">Payment</button>
+				</div>
+			</div>
+	</div>
+	{% endif %}
+
+	{% for dish in food %}
+	<div class="modal" id="food-detail-{{ dish.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">ADD TO CART</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-3">
+								<img style="width: 100%;" src="{{ dish.path }}" alt="{{ dish.name }}">
+							</div>
+							<div class="col-9">
+								<div class="row">
+									<div class="col text-center"><strong>Name</strong></div>
+									<div class="col text-center"><strong>Price</strong></div>
+								</div>
+								<div class="row">
+									<div class="col text-center">{{ dish.name }}</div>
+									<div class="col text-center">{{ dish.price }} VND</div>
+								</div>
+								<div class="row" style="margin-top: 30px;">
+									<div class="col-12 text-center">{{ dish.des }}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="d-flex justify-content-center">
+				<div class="d-flex" style="margin: 10px; max-width: 300px">
+					<label class="form-label text-end center">Quantity:</label>
+					<input class="flex-fill form-control"
+					style="margin-left: 10px; margin-right: 10px;"
+					type="number" name="quantity" min="0" max="10" step="1" value="1">
+					<button type="submit" class="btn btn-primary">Order</button>
+				</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</body>
+</html>
