@@ -387,11 +387,11 @@ def search():
 
     con = sqlite3.connect('test.db')
     con.row_factory = sqlite3.Row
-    cur = con.execute("SELECT * FROM food WHERE food.name LIKE (?)", f"%{query}%")
+    cur = con.execute("SELECT * FROM food WHERE food.name LIKE (?)", (f"%{query}%",))
     food = cur.fetchall()
 
     con.row_factory = sqlite3.Row
-    cur = con.execute("SELECT * FROM cart where id = (?)", current_user.get_id())
+    cur = con.execute("SELECT * FROM cart WHERE id = (?)", (current_user.get_id(),))
     cart = cur.fetchall()
     total = sum(item['amount'] * item['price'] for item in cart)
     con.close()
@@ -407,7 +407,7 @@ def search():
 @app.route('/cart/clear', methods=["POST"])
 def clear_cart():
     con = sqlite3.connect('test.db')
-    con.execute("DELETE FROM cart WHERE id = (?)", current_user.get_id())
+    con.execute("DELETE FROM cart WHERE id = (?)", (current_user.get_id(),))
     con.commit()
     con.close()
     return '', 204
