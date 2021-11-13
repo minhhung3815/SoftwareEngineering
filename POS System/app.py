@@ -22,6 +22,10 @@ db = sqlite3.connect('test.db', check_same_thread=False)
 db.close()
 
 
+def chunker(seq, size):
+    return (seq[pos : pos + size] for pos in range(0, len(seq), size))
+
+
 class User(UserMixin):
     def __init__(self, user_id, username, email, password):
         self.user_id = unicode(user_id)
@@ -372,6 +376,31 @@ def drink():
         total += item[2] * item[5]
     return render_template(
         "index.html", total=total, food=food, bill=bill, number=number
+    )
+
+
+@app.route('/search')
+def search():
+    # query = request.args.get('query')
+
+    con = sqlite3.connect('test.db')
+    con.row_factory = sqlite3.Row
+    cur = con.execute("SELECT * FROM food")
+    food = cur.fetchall()
+
+    con.row_factory = sqlite3.Row
+    cur = con.execute(
+        "SELECT * FROM cart where id = (?)", current_user.get_id()
+    )
+    cart = cur.fetchall()
+    total = sum(item['amount'] * item['price'] for item in cart)
+    con.close()
+    return render_template(
+        "search.html",
+        food=food,
+        cart=cart,
+        total=total,
+        chunker=chunker,
     )
 
 
