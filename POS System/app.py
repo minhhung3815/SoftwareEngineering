@@ -14,10 +14,12 @@ from flask_login import (
 from flask_login._compat import unicode
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from backend import backend
 from forms import LoginForm, RegisterForm
 
 app = Flask(__name__)
 app.secret_key = ["832790179812"]
+app.register_blueprint(backend)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
@@ -407,31 +409,6 @@ def search():
         total=total,
         chunker=chunker,
     )
-
-
-@app.route("/cart/clear", methods=["POST"])
-def clear_cart():
-    if not current_user.is_authenticated:
-        abort(401)
-
-    con = sqlite3.connect("test.db")
-    con.execute("DELETE FROM cart WHERE id = ?", (current_user.get_id(),))
-    con.commit()
-    con.close()
-    return "", 204
-
-
-@app.route("/cart/items/<int:item_id>", methods=["DELETE"])
-def remove_cart_item(item_id: int):
-    if not current_user.is_authenticated:
-        abort(401)
-
-    con = sqlite3.connect("test.db")
-    user_id = current_user.get_id()
-    con.execute("DELETE FROM cart WHERE id = ? AND food_id = ?", (user_id, item_id))
-    con.commit()
-    con.close()
-    return "", 204
 
 
 if __name__ == "__main__":
