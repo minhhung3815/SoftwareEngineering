@@ -2,7 +2,6 @@ import datetime
 import sqlite3
 
 from flask import Flask, abort, flash, redirect, render_template, request, url_for
-from flask_bcrypt import Bcrypt
 from flask_login import (
     LoginManager,
     UserMixin,
@@ -20,7 +19,6 @@ from forms import LoginForm, RegisterForm
 app = Flask(__name__)
 app.secret_key = ["832790179812"]
 app.register_blueprint(backend)
-bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 login_manager.login_message = "Please login to access this page!"
