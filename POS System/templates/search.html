@@ -110,7 +110,7 @@
 			<div class="d-flex bd-highlight">
 				<img class="billimg" style="margin-right: 10px;" src="{{item.path}}">
 				<h5 class="flex-fill align-middle" style="margin: auto;">{{ item.food_name }}: {{item['amount']}}</h5>
-			<button type="button" class="btn-close text-reset" style="margin: auto;" aria-label="Remove"></button>
+				<button type="button" class="btn-close text-reset" style="margin: auto;" aria-label="Remove" onclick="removeCartItem({{ item.food_id }})"></button>
 			</div>
 			<hr/>
 			{% endfor %}
@@ -189,6 +189,15 @@
 	<script>
 		function clearCart() {
 			fetch('/cart/clear', { method: 'POST' })
+				.then(response => {
+					if (response.ok) {
+						window.location.reload();
+					}
+				});
+		}
+
+		function removeCartItem(itemId) {
+			fetch('/cart/items/' + itemId, { method: 'DELETE' })
 				.then(response => {
 					if (response.ok) {
 						window.location.reload();

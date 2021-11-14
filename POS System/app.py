@@ -1,11 +1,16 @@
 import datetime
 import sqlite3
 
-from flask import (Flask, abort, flash, redirect, render_template, request,
-                   url_for)
+from flask import Flask, abort, flash, redirect, render_template, request, url_for
 from flask_bcrypt import Bcrypt
-from flask_login import (LoginManager, UserMixin, current_user, login_required,
-                         login_user, logout_user)
+from flask_login import (
+    LoginManager,
+    UserMixin,
+    current_user,
+    login_required,
+    login_user,
+    logout_user,
+)
 from flask_login._compat import unicode
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -387,11 +392,11 @@ def search():
 
     con = sqlite3.connect("test.db")
     con.row_factory = sqlite3.Row
-    cur = con.execute("SELECT * FROM food WHERE food.name LIKE (?)", (f"%{query}%",))
+    cur = con.execute("SELECT * FROM food WHERE food.name LIKE ?", (f"%{query}%",))
     food = cur.fetchall()
 
     con.row_factory = sqlite3.Row
-    cur = con.execute("SELECT * FROM cart WHERE id = (?)", (current_user.get_id(),))
+    cur = con.execute("SELECT * FROM cart WHERE id = ?", (current_user.get_id(),))
     cart = cur.fetchall()
     total = sum(item["amount"] * item["price"] for item in cart)
     con.close()
@@ -406,8 +411,24 @@ def search():
 
 @app.route("/cart/clear", methods=["POST"])
 def clear_cart():
+    if not current_user.is_authenticated:
+        abort(401)
+
     con = sqlite3.connect("test.db")
-    con.execute("DELETE FROM cart WHERE id = (?)", (current_user.get_id(),))
+    con.execute("DELETE FROM cart WHERE id = ?", (current_user.get_id(),))
+    con.commit()
+    con.close()
+    return "", 204
+
+
+@app.route("/cart/items/<int:item_id>", methods=["DELETE"])
+def remove_cart_item(item_id: int):
+    if not current_user.is_authenticated:
+        abort(401)
+
+    con = sqlite3.connect("test.db")
+    user_id = current_user.get_id()
+    con.execute("DELETE FROM cart WHERE id = ? AND food_id = ?", (user_id, item_id))
     con.commit()
     con.close()
     return "", 204
