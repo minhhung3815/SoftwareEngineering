@@ -34,15 +34,15 @@ def chunker(seq, size):
 
 
 class User(UserMixin):
-    def __init__(self, user_id, username, email, password):
+    def __init__(self, user_id, username, email, pwhash):
         self.user_id = unicode(user_id)
         self.email = email
         self.username = username
-        self.password = generate_password_hash(password)
+        self.pwhash = pwhash
         self.authenticated = False
 
     def verify_password(self, password):
-        return check_password_hash(self.password, password)
+        return check_password_hash(self.pwhash, password)
 
     def is_active(self):
         return self.is_active()
@@ -241,9 +241,10 @@ def register():
             flash("Email are already exists", "danger")
             return redirect(url_for("register"))
         else:
+            pwhash = generate_password_hash(password)
             cur.execute(
                 "insert into user(username,email,password)values(?,?,?)",
-                (username, email, password),
+                (username, email, pwhash),
             )
         con.commit()
         con.close()
