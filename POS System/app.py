@@ -270,13 +270,11 @@ def login():
                 return redirect("/")
             else:
                 flash(
-                    f"Username or Password mismatch. Please try again!",
+                    "Username or Password mismatch. Please try again!",
                     category="danger",
                 )
         else:
-            flash(
-                f"Username or Password mismatch. Please try again!", category="danger"
-            )
+            flash("Username or Password mismatch. Please try again!", category="danger")
     return render_template("login.html", form=form)
 
 
