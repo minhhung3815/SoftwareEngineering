@@ -83,14 +83,11 @@ def index():
         curs = conn.execute("SELECT * FROM FOOD")
         food = curs.fetchall()
 
-        curs = conn.execute(
-            "select * from CART where ID = (?)", (current_user.get_id(),)
-        )
+        user_id = int(current_user.get_id())
+        curs = conn.execute("select * from CART where ID = (?)", (user_id,))
         bill = curs.fetchall()
 
-        curs = conn.execute(
-            "select count(*) from CART where ID = (?)", (current_user.get_id(),)
-        )
+        curs = conn.execute("select count(*) from CART where ID = (?)", (user_id,))
         number = curs.fetchone()
 
         total = 0
@@ -111,22 +108,23 @@ def choose(number, id):
     curs = conn.execute("select * from FOOD where ID = (?)", (id,))
     food = curs.fetchone()
 
+    user_id = int(current_user.get_id())
     curs = conn.execute(
         "select * from CART where ID = (?) and food_name = (?)",
-        (current_user.get_id(), food[0]),
+        (user_id, food[0]),
     )
     data = curs.fetchone()
     if not data:
         curs = conn.execute(
             "insert into CART(ID,food_name,amount,path,food_id,price)values(?,?,?,?,?,?)",
-            (current_user.get_id(), food[0], number, food[3], food[5], food[1]),
+            (user_id, food[0], number, food[3], food[5], food[1]),
         )
         conn.commit()
         conn.close()
     else:
         curs = conn.execute(
             "update CART set amount = (?) where ID = (?) and food_name = (?)",
-            (data[2] + int(number), current_user.get_id(), food[0]),
+            (data[2] + int(number), user_id, food[0]),
         )
         conn.commit()
         conn.close()
@@ -144,10 +142,10 @@ def remove(id):
 @app.route("/updatehistory/", methods=["POST", "GET"])
 @login_required
 def updatehistory():
-    id = current_user.get_id()
+    user_id = int(current_user.get_id())
     con = sqlite3.connect("test.db")
     cur = con.cursor()
-    cur.execute("select * from CART where id = (?)", (id,))
+    cur.execute("select * from CART where id = (?)", (user_id,))
     data = cur.fetchall()
 
     total = 0
@@ -156,7 +154,7 @@ def updatehistory():
 
     cur.execute(
         "insert into history(id_user, time, total)values(?,?,?)",
-        (id, datetime.date.today(), total),
+        (user_id, datetime.date.today(), total),
     )
     con.commit()
 
@@ -166,11 +164,11 @@ def updatehistory():
     for item in data:
         cur.execute(
             "insert into history_detail(id,food,amount,id_user)values(?,?,?,?)",
-            (max_his[0], item[1], item[2], current_user.get_id()),
+            (max_his[0], item[1], item[2], user_id),
         )
         con.commit()
 
-    cur.execute("delete from CART where id = (?)", (id,))
+    cur.execute("delete from CART where id = (?)", (user_id,))
     con.commit()
     con.close()
     return redirect("/")
@@ -179,14 +177,13 @@ def updatehistory():
 @app.route("/history/", methods=["POST", "GET"])
 @login_required
 def history():
+    user_id = int(current_user.get_id())
     con = sqlite3.connect("test.db")
     cur = con.cursor()
-    cur.execute("select * from history where id_user = (?)", (current_user.get_id(),))
+    cur.execute("select * from history where id_user = (?)", (user_id,))
     his = list(cur.fetchall())
 
-    cur.execute(
-        "select * from history_detail where id_user = (?)", (current_user.get_id(),)
-    )
+    cur.execute("select * from history_detail where id_user = (?)", (user_id,))
     his_detail = list(cur.fetchall())
     return render_template("history.html", his=his, his_detail=his_detail)
 
@@ -202,20 +199,22 @@ def removeall():
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
+    user_id = int(current_user.get_id())
     if request.method == "POST":
-        id = current_user.get_id()
         name = request.form["NAME"]
         age = request.form["AGE"]
         con = sqlite3.connect("test.db")
         cur = con.cursor()
-        cur.execute("insert into PROFILE(id, name, age)values(?,?,?)", (id, name, age))
+        cur.execute(
+            "insert into PROFILE(id, name, age)values(?,?,?)", (user_id, name, age)
+        )
         con.commit()
         con.close()
         return redirect(url_for("profile"))
     else:
         con = sqlite3.connect("test.db")
         cur = con.cursor()
-        cur.execute("select * from PROFILE where id=?", (current_user.get_id(),))
+        cur.execute("select * from PROFILE where id=?", (user_id,))
         data = cur.fetchone()
         return render_template("profile.html", data=data)
 
@@ -287,18 +286,16 @@ def logout():
 
 @app.route("/rice/", methods=["GET", "POST"])
 def rice():
-
+    user_id = int(current_user.get_id())
     params = ["Rice"]
     conn = sqlite3.connect("test.db")
     curs = conn.cursor()
     curs = conn.execute("SELECT * FROM FOOD WHERE Type = (?)", params)
     food = curs.fetchall()
-    curs = conn.execute("select * from CART where ID = (?)", (current_user.get_id(),))
+    curs = conn.execute("select * from CART where ID = (?)", (user_id,))
     bill = curs.fetchall()
 
-    curs = conn.execute(
-        "select count(*) from CART where ID = (?)", (current_user.get_id(),)
-    )
+    curs = conn.execute("select count(*) from CART where ID = (?)", (user_id,))
     number = curs.fetchone()
     conn.close()
     total = 0
@@ -311,18 +308,16 @@ def rice():
 
 @app.route("/chicken/", methods=["GET", "POST"])
 def chicken():
-
+    user_id = int(current_user.get_id())
     params = ["Chicken"]
     conn = sqlite3.connect("test.db")
     curs = conn.cursor()
     curs = conn.execute("SELECT * FROM FOOD WHERE Type = (?)", params)
     food = curs.fetchall()
-    curs = conn.execute("select * from CART where ID = (?)", (current_user.get_id(),))
+    curs = conn.execute("select * from CART where ID = (?)", (user_id,))
     bill = curs.fetchall()
 
-    curs = conn.execute(
-        "select count(*) from CART where ID = (?)", (current_user.get_id(),)
-    )
+    curs = conn.execute("select count(*) from CART where ID = (?)", (user_id,))
     number = curs.fetchone()
     conn.close()
 
@@ -336,19 +331,17 @@ def chicken():
 
 @app.route("/snack/", methods=["GET", "POST"])
 def snack():
-
+    user_id = int(current_user.get_id())
     params = ["Snack"]
     conn = sqlite3.connect("test.db")
     curs = conn.cursor()
     curs = conn.execute("SELECT * FROM FOOD WHERE Type = (?)", params)
     food = curs.fetchall()
 
-    curs = conn.execute("select * from CART where ID = (?)", (current_user.get_id(),))
+    curs = conn.execute("select * from CART where ID = (?)", (user_id,))
     bill = curs.fetchall()
 
-    curs = conn.execute(
-        "select count(*) from CART where ID = (?)", (current_user.get_id(),)
-    )
+    curs = conn.execute("select count(*) from CART where ID = (?)", (user_id,))
     number = curs.fetchone()
     conn.close()
     total = 0
@@ -367,12 +360,11 @@ def drink():
     curs = conn.cursor()
     curs = conn.execute("SELECT * FROM FOOD WHERE Type = (?)", params)
     food = curs.fetchall()
-    curs = conn.execute("select * from CART where ID = (?)", (current_user.get_id(),))
+    user_id = int(current_user.get_id())
+    curs = conn.execute("select * from CART where ID = (?)", (user_id,))
     bill = curs.fetchall()
 
-    curs = conn.execute(
-        "select count(*) from CART where ID = (?)", (current_user.get_id(),)
-    )
+    curs = conn.execute("select count(*) from CART where ID = (?)", (user_id,))
     number = curs.fetchone()
 
     conn.close()
@@ -395,8 +387,8 @@ def search():
     cur = con.execute("SELECT * FROM food WHERE food.name LIKE ?", (f"%{query}%",))
     food = cur.fetchall()
 
-    con.row_factory = sqlite3.Row
-    cur = con.execute("SELECT * FROM cart WHERE id = ?", (current_user.get_id(),))
+    user_id = int(current_user.get_id())
+    cur = con.execute("SELECT * FROM cart WHERE id = ?", (user_id,))
     cart = cur.fetchall()
     total = sum(item["amount"] * item["price"] for item in cart)
     con.close()

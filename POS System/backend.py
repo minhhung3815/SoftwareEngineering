@@ -10,7 +10,8 @@ backend = Blueprint("backend", __name__)
 @login_required
 def clear_cart():
     con = sqlite3.connect("test.db")
-    con.execute("DELETE FROM cart WHERE id = ?", (current_user.get_id(),))
+    user_id = int(current_user.get_id())
+    con.execute("DELETE FROM cart WHERE id = ?", (user_id,))
     con.commit()
     con.close()
     return "", 204
@@ -20,7 +21,7 @@ def clear_cart():
 @login_required
 def remove_cart_item(item_id: int):
     con = sqlite3.connect("test.db")
-    user_id = current_user.get_id()
+    user_id = int(current_user.get_id())
     con.execute("DELETE FROM cart WHERE id = ? AND food_id = ?", (user_id, item_id))
     con.commit()
     con.close()
