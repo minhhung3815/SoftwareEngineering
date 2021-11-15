@@ -187,7 +187,7 @@
 
 	<script>
 		function clearCart() {
-			fetch('/cart/clear', { method: 'POST' })
+			fetch('/api/cart/clear', { method: 'POST' })
 				.then(response => {
 					if (response.ok) {
 						window.location.reload();
@@ -196,7 +196,7 @@
 		}
 
 		function removeCartItem(itemId) {
-			fetch('/cart/items/' + itemId, { method: 'DELETE' })
+			fetch('/api/cart/items/' + itemId, { method: 'DELETE' })
 				.then(response => {
 					if (response.ok) {
 						window.location.reload();
@@ -205,7 +205,7 @@
 		}
 
 		function addCartItem(itemId) {
-			fetch('/cart', {
+			fetch('/api/cart', {
 				method: 'POST',
 				headers: {
 					'Accept': 'application/json',

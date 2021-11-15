@@ -18,7 +18,8 @@ from forms import LoginForm, RegisterForm
 
 app = Flask(__name__)
 app.secret_key = ["832790179812"]
-app.register_blueprint(backend)
+app.register_blueprint(backend, url_prefix="/api")
+
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 login_manager.login_message = "Please login to access this page!"
