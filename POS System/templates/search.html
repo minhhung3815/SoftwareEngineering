@@ -171,14 +171,13 @@
 					</div>
 				</div>
 				<div class="d-flex justify-content-center">
-				<form class="d-flex" action="/" method="post"
-					style="margin: 10px; max-width: 300px">
-					<input style="display: none;" type="text" name="id" value={{dish.id}}>
+				<div class="d-flex" style="margin: 10px; max-width: 300px">
 					<label class="form-label text-end center">Quantity:</label>
-					<input class="flex-fill form-control"
+					<input class="flex-fill form-control" id="quantity-input-{{ dish.id }}"
 					style="margin-left: 10px; margin-right: 10px;"
 					type="number" name="quantity" min="0" max="10" step="1" value="1">
-					<button type="submit" class="btn btn-primary">Order</button>
+					<button type="button" onclick="addCartItem({{ dish.id }})"
+						class="btn btn-primary">Order</button>
 				</form>
 				</div>
 			</div>
@@ -198,6 +197,25 @@
 
 		function removeCartItem(itemId) {
 			fetch('/cart/items/' + itemId, { method: 'DELETE' })
+				.then(response => {
+					if (response.ok) {
+						window.location.reload();
+					}
+				});
+		}
+
+		function addCartItem(itemId) {
+			fetch('/cart', {
+				method: 'POST',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					item_id: itemId,
+					quantity: document.getElementById('quantity-input-' + itemId).value,
+				}),
+			})
 				.then(response => {
 					if (response.ok) {
 						window.location.reload();
