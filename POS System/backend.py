@@ -29,7 +29,7 @@ def clear_cart():
 @login_required
 def change_item_quantity(item_id: int):
     data = request.get_json()
-    if data is None:
+    if data is None or data.get("quantity") is None or data["quantity"] < 0:
         abort(400)
     quantity = data["quantity"]
 
