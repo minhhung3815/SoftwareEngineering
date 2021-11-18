@@ -108,16 +108,19 @@
 		<hr/>
 		<div class="offcanvas-body">
 			{% for item in cart %}
+			<div id="cart-item-{{ item['food_id'] }}">
 			<div class="d-flex bd-highlight">
 				<img class="billimg" style="margin-right: 10px;" src="{{item.path}}">
 				<div class="container-fluid">
-					<h5 class="row flex-fill align-middle" style="margin: auto;">{{ item.food_name }}: {{item['amount']}}</h5>
+					<h5 class="row flex-fill align-middle" style="margin: auto;">{{ item.food_name }}</h5>
 					<div class="row" style="max-width: 40%;">
 						<div class="col-12 d-flex flex-row">
 							<button class="btn btn-outline-primary bi bi-dash" type="button"
 								onclick="changeItemQuantity({{ item['food_id'] }}, -1)"></button>
 							<div class="align-middle" style="margin: 10px;">
-								<h5 id="cart-item-{{ item['food_id'] }}-quantity">1</h5>
+								<h5 id="cart-item-{{ item['food_id'] }}-quantity">
+									{{item['amount']}}
+								</h5>
 							</div>
 							<button class="btn btn-outline-primary bi bi-plus" type="button"
 								onclick="changeItemQuantity({{ item['food_id'] }}, 1)"></button>
@@ -127,6 +130,7 @@
 				<button type="button" class="btn-close text-reset" style="margin: auto;" aria-label="Remove" onclick="removeCartItem({{ item.food_id }})"></button>
 			</div>
 			<hr/>
+			</div>
 			{% endfor %}
 		</div>
 		<hr/>
@@ -142,12 +146,8 @@
 					</button>
 				</div>
 				<form class="col-md-6 d-flex justify-content-center" method="post" action="/updatehistory/">
-					<button type="submit"
-					{% if total > 0 %}
-					class="btn btn-primary"
-					{% else %}
-					class="btn btn-secondary" disabled
-					{% endif %}
+					<button id="paymentButton" type="submit" class="btn btn-primary"
+					{% if total == 0 %} disabled {% endif %}
 					>Payment</button>
 				</form>
 			</div>
@@ -250,8 +250,9 @@
 			});
 			if (response.ok) {
 				element.innerHTML = quantity;
-				const data = await response.json();
-				document.getElementById('total').innerHTML = data.total;
+				const {total} = await response.json();
+				document.getElementById('total').innerHTML = total;
+				document.getElementById('paymentButton').disabled = total === 0;
 			}
 		}
 	</script>
