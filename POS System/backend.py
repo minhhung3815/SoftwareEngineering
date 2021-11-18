@@ -6,6 +6,14 @@ from flask_login import current_user, login_required
 backend = Blueprint("backend", __name__)
 
 
+def get_total(con: sqlite3.Connection, user_id: int) -> int:
+    con.row_factory = sqlite3.Row
+    cur = con.execute("SELECT * FROM cart WHERE id = ?", (user_id,))
+    cart = cur.fetchall()
+    total = sum(item["amount"] * item["price"] for item in cart)
+    return total
+
+
 @backend.route("/cart/clear", methods=["POST"])
 @login_required
 def clear_cart():
@@ -30,9 +38,7 @@ def change_item_quantity(item_id: int):
     user_id = int(current_user.get_id())
     con.execute("UPDATE cart SET amount = ? WHERE food_id = ?", (quantity, item_id))
     con.commit()
-    cur = con.execute("SELECT * FROM cart WHERE id = ?", (user_id,))
-    cart = cur.fetchall()
-    total = sum(item["amount"] * item["price"] for item in cart)
+    total = get_total(con, user_id)
     con.close()
     resp = {"total": total}
     return resp
@@ -45,8 +51,10 @@ def remove_cart_item(item_id: int):
     user_id = int(current_user.get_id())
     con.execute("DELETE FROM cart WHERE id = ? AND food_id = ?", (user_id, item_id))
     con.commit()
+    total = get_total(con, user_id)
     con.close()
-    return "", 204
+    resp = {"total": total}
+    return resp
 
 
 @backend.route("/cart", methods=["POST"])

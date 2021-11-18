@@ -102,7 +102,7 @@
 	{% if current_user.is_authenticated %}
 	<div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
 		<div class="offcanvas-header">
-			<h5 class="offcanvas-title" id="offcanvasLabel">Your cart ({{ cart | length }})</h5>
+			<h5 class="offcanvas-title" id="offcanvasLabel">Your cart (<span id="cart-size">{{ cart | length }}</span>)</h5>
 			<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 		</div>
 		<hr/>
@@ -209,13 +209,16 @@
 				});
 		}
 
-		function removeCartItem(itemId) {
-			fetch('/api/cart/items/' + itemId, { method: 'DELETE' })
-				.then(response => {
-					if (response.ok) {
-						window.location.reload();
-					}
-				});
+		async function removeCartItem(itemId) {
+			const response = await fetch('/api/cart/items/' + itemId, { method: 'DELETE' });
+			if (response.ok) {
+				const element = document.getElementById('cart-size');
+				element.innerHTML = parseInt(element.innerHTML) - 1;
+				document.getElementById('cart-item-' + itemId).remove();
+				const {total} = await response.json();
+				document.getElementById('total').innerHTML = total;
+				document.getElementById('paymentButton').disabled = total === 0;
+			}
 		}
 
 		function addCartItem(itemId) {
