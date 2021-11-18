@@ -9,13 +9,14 @@
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet">
 	<!-- Latest compiled JavaScript -->
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
 
 	<style>
 .modal-dialog {
 	height: 50%; /* = 50% of the .modal-backdrop block = 50% of the screen */
 }
 .modal-content {
-  height: 100%; /* = 100% of the .modal-dialog block */
+	height: 100%; /* = 100% of the .modal-dialog block */
 }
 
 .center {
@@ -39,40 +40,40 @@
 				<img width="40" height="40" src="https://upload.wikimedia.org/wikipedia/vi/thumb/7/7e/Logo_KFC.svg/1200px-Logo_KFC.svg.png">
 			</a>
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" href="/">Back to home</a>
-        </li>
+				<li class="nav-item">
+					<a class="nav-link" href="/">Back to home</a>
+				</li>
 			</ul>
 			<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        {% if current_user.is_authenticated %}
-        <li class="nav-item">
+				{% if current_user.is_authenticated %}
+				<li class="nav-item">
 					<a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvas" role="button" aria-controls="offcanvas">
 						Cart({{ cart | length }})
 					</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/history/">History</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Profile</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/logout">Logout</a>
-        </li>
-        {% else %}
-        <li class="nav-item">
-          <a class="nav-link" href="/login">Login</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/register">Register</a>
-        </li>
-        {% endif %}
-      </ul>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/history/">History</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#">Profile</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/logout">Logout</a>
+				</li>
+				{% else %}
+				<li class="nav-item">
+					<a class="nav-link" href="/login">Login</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/register">Register</a>
+				</li>
+				{% endif %}
+			</ul>
 
 			<form class="d-flex" action="/search">
-        <input class="form-control me-2" type="text" placeholder="Search food" aria-label="Search" name="query">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
+				<input class="form-control me-2" type="text" placeholder="Search food" aria-label="Search" name="query">
+				<button class="btn btn-outline-success" type="submit">Search</button>
+			</form>
 		</div>
 	</header>
 
@@ -109,7 +110,20 @@
 			{% for item in cart %}
 			<div class="d-flex bd-highlight">
 				<img class="billimg" style="margin-right: 10px;" src="{{item.path}}">
-				<h5 class="flex-fill align-middle" style="margin: auto;">{{ item.food_name }}: {{item['amount']}}</h5>
+				<div class="container-fluid">
+					<h5 class="row flex-fill align-middle" style="margin: auto;">{{ item.food_name }}: {{item['amount']}}</h5>
+					<div class="row" style="max-width: 40%;">
+						<div class="col-12 d-flex flex-row">
+							<button class="btn btn-outline-primary bi bi-dash" type="button"
+								onclick="changeItemQuantity({{ item['food_id'] }}, -1)"></button>
+							<div class="align-middle" style="margin: 10px;">
+								<h5 id="cart-item-{{ item['food_id'] }}-quantity">1</h5>
+							</div>
+							<button class="btn btn-outline-primary bi bi-plus" type="button"
+								onclick="changeItemQuantity({{ item['food_id'] }}, 1)"></button>
+						</div>
+					</div>
+				</div>
 				<button type="button" class="btn-close text-reset" style="margin: auto;" aria-label="Remove" onclick="removeCartItem({{ item.food_id }})"></button>
 			</div>
 			<hr/>
@@ -117,8 +131,8 @@
 		</div>
 		<hr/>
 			<div class="d-flex">
-        <h5 class="p-2 flex-fill">Total:</h5>
-        <h5 class="p-2 flex-fill text-end">{{total}} VND</h5>
+				<h5 class="p-2 flex-fill">Total:</h5>
+				<h5 class="p-2 flex-fill text-end"><span id="total">{{total}}</span> VND</h5>
 			</div>
 			<div class="row" style="margin-bottom: 10px;">
 				<div class="col-md-6 d-flex justify-content-center">
@@ -221,6 +235,24 @@
 						window.location.reload();
 					}
 				});
+		}
+
+		async function changeItemQuantity(itemId, change) {
+			const element = document.getElementById(`cart-item-${itemId}-quantity`);
+			const quantity = parseInt(element.innerHTML) + change;
+			const response = await fetch('/api/cart/items/' + itemId, {
+				method: 'PUT',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({quantity})
+			});
+			if (response.ok) {
+				element.innerHTML = quantity;
+				const data = await response.json();
+				document.getElementById('total').innerHTML = data.total;
+			}
 		}
 	</script>
 </body>
