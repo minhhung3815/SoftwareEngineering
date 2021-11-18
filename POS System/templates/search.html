@@ -48,7 +48,7 @@
 				{% if current_user.is_authenticated %}
 				<li class="nav-item">
 					<a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvas" role="button" aria-controls="offcanvas">
-						Cart({{ cart | length }})
+						Cart(<span id="cart-size-header">{{ cart | length }}</span>)
 					</a>
 				</li>
 				<li class="nav-item">
@@ -107,6 +107,7 @@
 		</div>
 		<hr/>
 		<div class="offcanvas-body">
+			<div id="cart-items">
 			{% for item in cart %}
 			<div id="cart-item-{{ item['food_id'] }}">
 			<div class="d-flex bd-highlight">
@@ -132,6 +133,7 @@
 			<hr/>
 			</div>
 			{% endfor %}
+			</div>
 		</div>
 		<hr/>
 			<div class="d-flex">
@@ -204,7 +206,10 @@
 			fetch('/api/cart/clear', { method: 'POST' })
 				.then(response => {
 					if (response.ok) {
-						window.location.reload();
+						document.getElementById('cart-items').remove();
+						document.getElementById('cart-size-header').innerHTML = 0;
+						document.getElementById('cart-size').innerHTML = 0;
+						document.getElementById('total').innerHTML = 0;
 					}
 				});
 		}
@@ -214,6 +219,7 @@
 			if (response.ok) {
 				const element = document.getElementById('cart-size');
 				element.innerHTML = parseInt(element.innerHTML) - 1;
+				document.getElementById('cart-size-header').innerHTML = element.innerHTML;
 				document.getElementById('cart-item-' + itemId).remove();
 				const {total} = await response.json();
 				document.getElementById('total').innerHTML = total;
