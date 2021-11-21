@@ -296,7 +296,9 @@
                             <input class="flex-fill form-control"
                             style="margin-left: 10px; margin-right: 10px;"
                             type="number" name="quantity" min="0" max="10" step="1" value="1">
-                            <button onclick="paymentfail()" class="btn btn-primary">Order</button>
+                            <button onclick="paymentfail()" class="btn btn-primary"
+														{% if not current_user.is_authenticated %} disabled {% endif %}
+															>Order</button>
                         </form>
                     {%endif%}
                     </div>
@@ -321,7 +323,7 @@
             alert("Please choose at least one dish!");
         }
         function clearCart() {
-			fetch('/cart/clear', { method: 'POST' })
+			fetch('/api/cart/clear', { method: 'POST' })
 				.then(response => {
 					if (response.ok) {
 						window.location.reload();
@@ -330,7 +332,7 @@
 		}
 
 		function removeCartItem(itemId) {
-			fetch('/cart/items/' + itemId, { method: 'DELETE' })
+			fetch('/api/cart/items/' + itemId, { method: 'DELETE' })
 				.then(response => {
 					if (response.ok) {
 						window.location.reload();

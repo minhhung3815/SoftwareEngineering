@@ -193,6 +193,7 @@
 					style="margin-left: 10px; margin-right: 10px;"
 					type="number" name="quantity" min="0" max="10" step="1" value="1">
 					<button type="button" onclick="addCartItem({{ dish.id }})"
+						{% if not current_user.is_authenticated %} disabled {% endif %}
 						class="btn btn-primary">Order</button>
 				</div>
 				</div>
