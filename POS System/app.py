@@ -83,7 +83,10 @@ def index():
         curs = conn.execute("SELECT * FROM FOOD")
         food = curs.fetchall()
 
-        user_id = int(current_user.get_id())
+        if current_user.is_authenticated:
+            user_id = int(current_user.get_id())
+        else:
+            user_id = 0
         curs = conn.execute("select * from CART where ID = (?)", (user_id,))
         bill = curs.fetchall()
 
@@ -108,7 +111,10 @@ def choose(number, id):
     curs = conn.execute("select * from FOOD where ID = (?)", (id,))
     food = curs.fetchone()
 
-    user_id = int(current_user.get_id())
+    if current_user.is_authenticated:
+        user_id = int(current_user.get_id())
+    else:
+        user_id = 0
     curs = conn.execute(
         "select * from CART where ID = (?) and food_name = (?)",
         (user_id, food[0]),
@@ -142,7 +148,10 @@ def remove(id):
 @app.route("/updatehistory/", methods=["POST", "GET"])
 @login_required
 def updatehistory():
-    user_id = int(current_user.get_id())
+    if current_user.is_authenticated:
+        user_id = int(current_user.get_id())
+    else:
+        user_id = 0
     con = sqlite3.connect("test.db")
     cur = con.cursor()
     cur.execute("select * from CART where id = (?)", (user_id,))
@@ -177,7 +186,10 @@ def updatehistory():
 @app.route("/history/", methods=["POST", "GET"])
 @login_required
 def history():
-    user_id = int(current_user.get_id())
+    if current_user.is_authenticated:
+        user_id = int(current_user.get_id())
+    else:
+        user_id = 0
     con = sqlite3.connect("test.db")
     cur = con.cursor()
     cur.execute("select * from history where id_user = (?)", (user_id,))
@@ -199,7 +211,10 @@ def removeall():
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
-    user_id = int(current_user.get_id())
+    if current_user.is_authenticated:
+        user_id = int(current_user.get_id())
+    else:
+        user_id = 0
     if request.method == "POST":
         name = request.form["NAME"]
         age = request.form["AGE"]
@@ -286,7 +301,10 @@ def logout():
 
 @app.route("/rice/", methods=["GET", "POST"])
 def rice():
-    user_id = int(current_user.get_id())
+    if current_user.is_authenticated:
+        user_id = int(current_user.get_id())
+    else:
+        user_id = 0
     params = ["Rice"]
     conn = sqlite3.connect("test.db")
     curs = conn.cursor()
@@ -308,7 +326,10 @@ def rice():
 
 @app.route("/chicken/", methods=["GET", "POST"])
 def chicken():
-    user_id = int(current_user.get_id())
+    if current_user.is_authenticated:
+        user_id = int(current_user.get_id())
+    else:
+        user_id = 0
     params = ["Chicken"]
     conn = sqlite3.connect("test.db")
     curs = conn.cursor()
@@ -331,7 +352,10 @@ def chicken():
 
 @app.route("/snack/", methods=["GET", "POST"])
 def snack():
-    user_id = int(current_user.get_id())
+    if current_user.is_authenticated:
+        user_id = int(current_user.get_id())
+    else:
+        user_id = 0
     params = ["Snack"]
     conn = sqlite3.connect("test.db")
     curs = conn.cursor()
@@ -360,7 +384,10 @@ def drink():
     curs = conn.cursor()
     curs = conn.execute("SELECT * FROM FOOD WHERE Type = (?)", params)
     food = curs.fetchall()
-    user_id = int(current_user.get_id())
+    if current_user.is_authenticated:
+        user_id = int(current_user.get_id())
+    else:
+        user_id = 0
     curs = conn.execute("select * from CART where ID = (?)", (user_id,))
     bill = curs.fetchall()
 
@@ -387,7 +414,10 @@ def search():
     cur = con.execute("SELECT * FROM food WHERE food.name LIKE ?", (f"%{query}%",))
     food = cur.fetchall()
 
-    user_id = int(current_user.get_id())
+    if current_user.is_authenticated:
+        user_id = int(current_user.get_id())
+    else:
+        user_id = 0
     cur = con.execute("SELECT * FROM cart WHERE id = ?", (user_id,))
     cart = cur.fetchall()
     total = sum(item["amount"] * item["price"] for item in cart)
