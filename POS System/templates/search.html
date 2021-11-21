@@ -9,14 +9,13 @@
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet">
 	<!-- Latest compiled JavaScript -->
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"></script>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
 
 	<style>
 .modal-dialog {
 	height: 50%; /* = 50% of the .modal-backdrop block = 50% of the screen */
 }
 .modal-content {
-	height: 100%; /* = 100% of the .modal-dialog block */
+  height: 100%; /* = 100% of the .modal-dialog block */
 }
 
 .center {
@@ -40,40 +39,38 @@
 				<img width="40" height="40" src="https://upload.wikimedia.org/wikipedia/vi/thumb/7/7e/Logo_KFC.svg/1200px-Logo_KFC.svg.png">
 			</a>
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-				<li class="nav-item">
-					<a class="nav-link" href="/">Back to home</a>
-				</li>
+        <li class="nav-item">
+          <a class="nav-link" href="/">Back to home</a>
+        </li>
 			</ul>
 			<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-				{% if current_user.is_authenticated %}
-				<li class="nav-item">
+        {% if current_user.is_authenticated %}
+        <li class="nav-item">
 					<a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvas" role="button" aria-controls="offcanvas">
-						Cart(<span id="cart-size-header">{{ cart | length }}</span>)
+						Cart({{ cart | length }})
 					</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/history/">History</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="#">Profile</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/logout">Logout</a>
-				</li>
-				{% else %}
-				<li class="nav-item">
-					<a class="nav-link" href="/login">Login</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/register">Register</a>
-				</li>
-				{% endif %}
-			</ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/history/">History</a>
+        </li>
+        
+        <li class="nav-item">
+          <a class="nav-link" href="/logout">Logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="/login">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/register">Register</a>
+        </li>
+        {% endif %}
+      </ul>
 
 			<form class="d-flex" action="/search">
-				<input class="form-control me-2" type="text" placeholder="Search food" aria-label="Search" name="query">
-				<button class="btn btn-outline-success" type="submit">Search</button>
-			</form>
+        <input class="form-control me-2" type="text" placeholder="Search food" aria-label="Search" name="query">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
 		</div>
 	</header>
 
@@ -97,48 +94,29 @@
 			{% endfor %}
 		</div>
 		{% endfor %}
-	</div>
+	</div> 
 
 	{% if current_user.is_authenticated %}
 	<div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
 		<div class="offcanvas-header">
-			<h5 class="offcanvas-title" id="offcanvasLabel">Your cart (<span id="cart-size">{{ cart | length }}</span>)</h5>
+			<h5 class="offcanvas-title" id="offcanvasLabel">Your cart ({{ cart | length }})</h5>
 			<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 		</div>
 		<hr/>
 		<div class="offcanvas-body">
-			<div id="cart-items">
 			{% for item in cart %}
-			<div id="cart-item-{{ item['food_id'] }}">
 			<div class="d-flex bd-highlight">
 				<img class="billimg" style="margin-right: 10px;" src="{{item.path}}">
-				<div class="container-fluid">
-					<h5 class="row flex-fill align-middle" style="margin: auto;">{{ item.food_name }}</h5>
-					<div class="row" style="max-width: 40%;">
-						<div class="col-12 d-flex flex-row">
-							<button class="btn btn-outline-primary bi bi-dash" type="button"
-								onclick="changeItemQuantity({{ item['food_id'] }}, -1)"></button>
-							<div class="align-middle" style="margin: 10px;">
-								<h5 id="cart-item-{{ item['food_id'] }}-quantity">
-									{{item['amount']}}
-								</h5>
-							</div>
-							<button class="btn btn-outline-primary bi bi-plus" type="button"
-								onclick="changeItemQuantity({{ item['food_id'] }}, 1)"></button>
-						</div>
-					</div>
-				</div>
+				<h5 class="flex-fill align-middle" style="margin: auto;">{{ item.food_name }}: {{item['amount']}}</h5>
 				<button type="button" class="btn-close text-reset" style="margin: auto;" aria-label="Remove" onclick="removeCartItem({{ item.food_id }})"></button>
 			</div>
 			<hr/>
-			</div>
 			{% endfor %}
-			</div>
 		</div>
 		<hr/>
 			<div class="d-flex">
-				<h5 class="p-2 flex-fill">Total:</h5>
-				<h5 class="p-2 flex-fill text-end"><span id="total">{{total}}</span> VND</h5>
+        <h5 class="p-2 flex-fill">Total:</h5>
+        <h5 class="p-2 flex-fill text-end">{{total}} VND</h5>
 			</div>
 			<div class="row" style="margin-bottom: 10px;">
 				<div class="col-md-6 d-flex justify-content-center">
@@ -148,8 +126,12 @@
 					</button>
 				</div>
 				<form class="col-md-6 d-flex justify-content-center" method="post" action="/updatehistory/">
-					<button id="paymentButton" type="submit" class="btn btn-primary"
-					{% if total == 0 %} disabled {% endif %}
+					<button type="submit"
+					{% if total > 0 %}
+					class="btn btn-primary"
+					{% else %}
+					class="btn btn-secondary" disabled
+					{% endif %}
 					>Payment</button>
 				</form>
 			</div>
@@ -187,14 +169,15 @@
 					</div>
 				</div>
 				<div class="d-flex justify-content-center">
-				<div class="d-flex" style="margin: 10px; max-width: 300px">
+				<form class="d-flex" action="/" method="post"
+					style="margin: 10px; max-width: 300px">
+					<input style="display: none;" type="text" name="id" value={{dish.id}}>
 					<label class="form-label text-end center">Quantity:</label>
-					<input class="flex-fill form-control" id="quantity-input-{{ dish.id }}"
+					<input class="flex-fill form-control"
 					style="margin-left: 10px; margin-right: 10px;"
 					type="number" name="quantity" min="0" max="10" step="1" value="1">
-					<button type="button" onclick="addCartItem({{ dish.id }})"
-						class="btn btn-primary">Order</button>
-				</div>
+					<button type="submit" class="btn btn-primary">Order</button>
+				</form>
 				</div>
 			</div>
 		</div>
@@ -203,42 +186,7 @@
 
 	<script>
 		function clearCart() {
-			fetch('/api/cart/clear', { method: 'POST' })
-				.then(response => {
-					if (response.ok) {
-						document.getElementById('cart-items').remove();
-						document.getElementById('cart-size-header').innerHTML = 0;
-						document.getElementById('cart-size').innerHTML = 0;
-						document.getElementById('total').innerHTML = 0;
-					}
-				});
-		}
-
-		async function removeCartItem(itemId) {
-			const response = await fetch('/api/cart/items/' + itemId, { method: 'DELETE' });
-			if (response.ok) {
-				const element = document.getElementById('cart-size');
-				element.innerHTML = parseInt(element.innerHTML) - 1;
-				document.getElementById('cart-size-header').innerHTML = element.innerHTML;
-				document.getElementById('cart-item-' + itemId).remove();
-				const {total} = await response.json();
-				document.getElementById('total').innerHTML = total;
-				document.getElementById('paymentButton').disabled = total === 0;
-			}
-		}
-
-		function addCartItem(itemId) {
-			fetch('/api/cart', {
-				method: 'POST',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					item_id: itemId,
-					quantity: document.getElementById('quantity-input-' + itemId).value,
-				}),
-			})
+			fetch('/cart/clear', { method: 'POST' })
 				.then(response => {
 					if (response.ok) {
 						window.location.reload();
@@ -246,23 +194,13 @@
 				});
 		}
 
-		async function changeItemQuantity(itemId, change) {
-			const element = document.getElementById(`cart-item-${itemId}-quantity`);
-			const quantity = parseInt(element.innerHTML) + change;
-			const response = await fetch('/api/cart/items/' + itemId, {
-				method: 'PUT',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({quantity})
-			});
-			if (response.ok) {
-				element.innerHTML = quantity;
-				const {total} = await response.json();
-				document.getElementById('total').innerHTML = total;
-				document.getElementById('paymentButton').disabled = total === 0;
-			}
+		function removeCartItem(itemId) {
+			fetch('/cart/items/' + itemId, { method: 'DELETE' })
+				.then(response => {
+					if (response.ok) {
+						window.location.reload();
+					}
+				});
 		}
 	</script>
 </body>

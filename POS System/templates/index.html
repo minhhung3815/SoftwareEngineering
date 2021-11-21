@@ -5,55 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>POS System</title>
     <link rel = "stylesheet" href = {{ url_for('static', filename='index.css')}}/>
+    <!-- Latest compiled and minified CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Latest compiled JavaScript -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         var linkserver = "http://127.0.0.1:5000";
     </script>
+    <style>
+        .modal-dialog {
+            height: 50%; /* = 50% of the .modal-backdrop block = 50% of the screen */
+        }
+        .modal-content {
+          height: 100%; /* = 100% of the .modal-dialog block */
+        }
+        
+        .center {
+            margin: auto;
+        }
+        
+        .billimg{
+            width: 20%;
+            height: 80%;
+            border-radius: 10px;
+            top: 10%;
+            left: 2%;
+        }
+    </style>
   </head>
   <body>
     <div class = "left">
         <div class = "typebar">
-            <div>
+            <div class = "rice">
                 <a href = "{{linkserver}}/rice/" >
                     <img src = "https://cdn.kfc.com.my/images/menu/delivery/delivery_SetF-1pc-Rice-Combo.png">
+                    Rice and Burgur
                 </a>
+                
+            </div>
+            <div class = "chicken">
                 <a href = "{{linkserver}}/chicken/">
                     <img src = "https://www.eatthis.com/wp-content/uploads/sites/4//media/images/ext/966368714/kfc-original-chicken-recipe.jpg?quality=82&strip=1&resize=640%2C360">
                 </a>
+                <a href = "{{linkserver}}/chicken/">Chicken</a>
+            </div>
+            <div class = "snack">  
                 <a href = "{{linkserver}}/snack/">
                     <img src = "https://cdn-images-fishry.azureedge.net/product/Snack-Bucket-500x360-96c84b3-kfc.png">
                 </a>
+                <a href = "{{linkserver}}/snack/">Snack</a>
+            </div>
+            <div class = "drink"> 
                 <a href = "{{linkserver}}/drink/" style="margin-right:0;">
                     <img src = "https://d12n9cpx6835mo.cloudfront.net/dewfreeze_web_thumb.jpg?v=178.6">
+                    <a href = "{{linkserver}}/drink/">Drink</a>
                 </a>
             </div>
-
-            <div class = "texttype">
-                <a class = "a1" href = "{{linkserver}}/rice/">Rice and Burger</a>
-                <a class = "a2" href = "{{linkserver}}/chicken/">Chicken</a>
-                <a class = "a3" href = "{{linkserver}}/snack/">Snack</a>
-                <a class = "a4" href = "{{linkserver}}/drink/">Drink</a>
-            </div>
         </div>
-
-        <!-- <div class = "tablecontain">
-            <table class = "infotable">
-                <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Action</th>
-                </tr>
-                {% for item in food %}
-                    <tr>
-                        <td>{{item[0]}}</td>
-                        <td>{{item[1]}}</td>
-                        <td>
-                            <a href = "/choose/{{item[0]}}">Choose</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-              </table>
-        </div> -->
-
         <div class = "firstfood">
             <img src = "{{food[0][3]}}">
             <div class = "container">
@@ -62,8 +70,8 @@
                     {{food[0][1]}} VND
                 </h4>
             </div>
-            <div class = "buttonChoose">
-                <button id="myBtn1">Order</button>
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#food-detail-{{ food[0][5] }}">Order</button>
             </div>
             
         </div>
@@ -76,8 +84,8 @@
                     {{food[1][1]}} VND
                 </h4>
             </div>
-            <div class = "buttonChoose">
-                <button id="myBtn2">Order</button>
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#food-detail-{{ food[1][5]}}">Order</button>
             </div>
             
         </div>
@@ -90,12 +98,12 @@
                     {{food[2][1]}} VND
                 </h4>
             </div>
-            <div class = "buttonChoose">
-                <button id="myBtn3">Order</button>
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#food-detail-{{ food[2][5] }}">Order</button>
             </div>
         </div>
 
-        <div class = "inforbar">
+        <!-- <div class = "inforbar">
             <h5>Back to home</h5>
         </div>
         
@@ -125,12 +133,51 @@
                 <input type="text" name="query" placeholder="Search food">
                 <button type="submit"><img class = "searchicon" src = "https://lh3.googleusercontent.com/proxy/g87posCwJ7PcEBXOaSYDEkJ9SHu0PFgPT_YfMk7uk7PcZsSrbHWNU9yjHLxIxIavnFcCGrQOSD3vmddalziHiZe7xj4i-FqQNw"> </button>
             </form>
-        </div>
+        </div> -->
+        <header class="navbar navbar-expand-lg bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    <img width="40" height="40" src="https://upload.wikimedia.org/wikipedia/vi/thumb/7/7e/Logo_KFC.svg/1200px-Logo_KFC.svg.png">
+                </a>
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Back to home</a>
+            </li>
+                </ul>
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            {% if current_user.is_authenticated %}
+            <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvas" role="button" aria-controls="offcanvas">
+                            Cart({{ number[0] }})
+                        </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/history/">History</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">Logout</a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="/login">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/register">Register</a>
+            </li>
+            {% endif %}
+          </ul>
+    
+                <form class="d-flex" action="/search">
+            <input class="form-control me-2" type="text" placeholder="Search food" aria-label="Search" name="query">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+            </div>
+        </header>
 
 
     </div>
-
-    {% if current_user.is_authenticated %}
+    
+    <!-- {% if current_user.is_authenticated %}
     <div class = "right">
         <h5 class = "yourcart">Your cart ({{number[0]}})</h5>
         <a href = "/removeall/" class = "clearall">Clear all</a>
@@ -150,106 +197,117 @@
         {% if total == 0 %}
         <a href = "/updatehistory/"><button onclick="paymentfail()" class = "payment">Payment</button></a>
         {% else %}
-        <a href = "/updatehistory/"><button onclick="payment()" class = "payment">Payment</button></a>
+        <a href = "/payment"><button class = "payment">Payment</button></a>
         {% endif %}
 
     </div>
-    {% endif %}
-
-    <div id="myModal" class="modal">
-
-        <!-- Modal content -->
-        <div class="modal-content">
-          <div class = "topmodal">
-              <h5>ADD TO CART</h5>
-          </div>
-          <div class = "bodymodal">
-              <h5>Name&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Price</h5>
-              {% for i in range(0,3) %}
-                <div id="myModal{{i}}" class = "modal{{i}}">
-                    <img src = "{{food[i][3]}}">
-                    <h5>{{food[i][0]}}</h5>
-                    <p>{{food[i][1]}}VND</p>
-                    <div class = "des{{i}}">
-                        <p>{{food[i][4]}}</p>
+    {% endif %} -->
+    <!-- <div class = "right">
+        <img src = "https://vuakhuyenmai.vn/wp-content/uploads/KFC-khuyen-mai-thang8-24-8-2021.jpg.pagespeed.ce.IO8A_bkoWi.jpg" >
+    </div> -->
+    {% if current_user.is_authenticated %}
+	<div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
+		<div class="offcanvas-header">
+			<h5 class="offcanvas-title" id="offcanvasLabel">Your cart ({{ number[0] }})</h5>
+			<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+		</div>
+		<hr/>
+		<div class="offcanvas-body">
+            {% for item in bill %}
+            <div class="d-flex bd-highlight">
+                <img class="billimg" style="margin-right: 10px;" src="{{item[3]}}">
+                <h5 class="flex-fill align-middle" style="margin: auto;">{{ item[1] }}: {{item[2]}}</h5>
+                <button type="button" class="btn-close text-reset" style="margin: auto;" aria-label="Remove" onclick="removeCartItem({{ item[4] }})"></button>
+            </div>
+            <hr/>
+            {% endfor %}
+        </div>
+		<hr/>
+			<div class="d-flex">
+        <h5 class="p-2 flex-fill">Total:</h5>
+        <h5 class="p-2 flex-fill text-end">{{total}} VND</h5>
+			</div>
+			<div class="row" style="margin-bottom: 10px;">
+				<div class="col-md-6 d-flex justify-content-center">
+					<button class="btn btn-outline-primary" onclick="clearCart()"
+						style="margin=auto;text-align:center;" type="button">
+						Clear all
+					</button>
+				</div>
+				<form class="col-md-6 d-flex justify-content-center" action="/payment">
+					<button type="submit"
+					{% if total > 0 %}
+					class="btn btn-primary"
+					{% else %}
+					class="btn btn-secondary" disabled
+					{% endif %}
+					>Payment</button>
+				</form>
+			</div>
+	</div>
+	{% endif %}
+    
+    {% for i in range(0, 3) %}
+        <div class="modal" id="food-detail-{{ food[i][5] }}" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">ADD TO CART</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    {% if current_user.is_authenticated %}
-                    <div class = "quantitybar">
-                        <h4>Quantity</h4>
-                        <form class = "quanform" action="/" method = "POST">
-                            <input class = "foodtype" type = "text" value = {{food[i][5]}} name = "id">
-                            <input class = "numberform" type="number" name="quantity" min="0" max="10" step="1" value="1">
-                            <input class = "orderbutton" type="submit" value="Order ">
-                        </form>
-                    </div>
-                    {% else %}
-                    <div class = "quantitybar">
-                        <h4>Quantity</h4>
-                        <div class = "quanform" action="/" method = "POST">
-                            <input class = "foodtype" type = "text" value = {{food[i][5]}} name = "id">
-                            <input class = "numberform" type="number" name="quantity" min="0" max="10" step="1" value="1">
-                            <button onclick="myFunction()" class = "orderbutton">Order</button>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-3">
+                                    <img style="width: 100%;" src="{{ food[i][3] }}" alt="{{ food[i][0] }}">
+                                </div>
+                                <div class="col-9">
+                                    <div class="row">
+                                        <div class="col text-center"><strong>Name</strong></div>
+                                        <div class="col text-center"><strong>Price</strong></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-center">{{ food[i][0]}}</div>
+                                        <div class="col text-center">{{ food[i][1] }} VND</div>
+                                    </div>
+                                    <div class="row" style="margin-top: 30px;">
+                                        <div class="col-12 text-center">{{ food[i][4] }}</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    {% endif %}
-                </div>   
-                
-                {% endfor %}
-                
-          </div>
-          <span class="close">&times;</span>
-          <p>Some text in the Modal..</p>
+                    <div class="d-flex justify-content-center">
+                    {% if current_user.is_authenticated %}
+                        <form class="d-flex" action="/" method="post"
+                            style="margin: 10px; max-width: 300px">
+                            <input style="display: none;" type="text" name="id" value={{food[i][5]}}>
+                            <label class="form-label text-end center">Quantity:</label>
+                            <input class="flex-fill form-control"
+                            style="margin-left: 10px; margin-right: 10px;"
+                            type="number" name="quantity" min="0" max="10" step="1" value="1">
+                            <button type="submit" class="btn btn-primary">Order</button>
+                        </form>
+                    {% else %}
+                        <form class="d-flex" 
+                            style="margin: 10px; max-width: 300px">
+                            <input style="display: none;" type="text" name="id" value={{food[i][5]}}>
+                            <label class="form-label text-end center">Quantity:</label>
+                            <input class="flex-fill form-control"
+                            style="margin-left: 10px; margin-right: 10px;"
+                            type="number" name="quantity" min="0" max="10" step="1" value="1">
+                            <button onclick="paymentfail()" class="btn btn-primary">Order</button>
+                        </form>
+                    {%endif%}
+                    </div>
+                </div>
+            </div>
         </div>
-      
-      </div>
+	{% endfor %}
 
     
       <script>
-        // Get the modal
-        var modal = document.getElementById("myModal");
-        var modal0 = document.getElementById("myModal0");
-        var modal1 = document.getElementById("myModal1");
-        var modal2 = document.getElementById("myModal2");
         
-        // Get the button that opens the modal
-        var btn1 = document.getElementById("myBtn1");
-        var btn2 = document.getElementById("myBtn2");
-        var btn3 = document.getElementById("myBtn3");
-        
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-        
-        // When the user clicks the button, open the modal 
-        btn1.onclick = function() {
-          modal.style.display = "block";
-          modal0.style.display = "block";
-        }
-        btn2.onclick = function() {
-          modal.style.display = "block";
-          modal1.style.display = "block";
-        }
-        btn3.onclick = function() {
-          modal.style.display = "block";
-          modal2.style.display = "block";
-        }
-        
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
-          modal.style.display = "none";
-          modal0.style.display = "none";
-          modal1.style.display = "none";
-          modal2.style.display = "none";
-        }
-        
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-          if (event.target == modal) {
-            modal.style.display = "none";
-            modal0.style.display = "none";
-            modal1.style.display = "none";
-            modal2.style.display = "none";
-          }
-        }
 
         function myFunction() {
             alert("Please login before ordering!");
@@ -262,7 +320,23 @@
         function paymentfail() {
             alert("Please choose at least one dish!");
         }
+        function clearCart() {
+			fetch('/cart/clear', { method: 'POST' })
+				.then(response => {
+					if (response.ok) {
+						window.location.reload();
+					}
+				});
+		}
 
+		function removeCartItem(itemId) {
+			fetch('/cart/items/' + itemId, { method: 'DELETE' })
+				.then(response => {
+					if (response.ok) {
+						window.location.reload();
+					}
+				});
+		}
         
         </script>
   </body>

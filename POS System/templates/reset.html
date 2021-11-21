@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}
+    Rest Password
+{% endblock %}
+
+{% block content %}
+<body>
+    <div class="container">
+        <form method="POST" class="form-signin" style="color:white">
+            {{ form2.hidden_tag() }}
+            <div class="text-center">
+            <img class="mb-4" src="https://www.hcmut.edu.vn/images/hcmut/logoBK.png" alt="" width="150" height="150">
+            <h1 class="h1 mb-3 font-weight-normal" style="color: blue">
+                Reset Password
+            </h1>
+            </div>
+            <br>
+            <h6 style="color: blue">
+                {{ form2.password1(class="form-control", placeholder="New Password") }}
+            </h6>
+
+            <h6 style="color: blue">
+                {{ form2.password2(class="form-control", placeholder="Confirm Password") }}
+            </h6>
+            {{ form2.submit(class="btn btn-lg btn-block btn-primary") }}
+
+        </form>
+    </div>
+</body>
+{% endblock %}

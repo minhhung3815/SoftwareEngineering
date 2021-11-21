@@ -6,12 +6,71 @@
     <title>POS System</title>
     <link rel = "stylesheet" href = {{ url_for('static', filename='index.css')}}/>
     <link rel = "stylesheet" href = {{ url_for('static', filename='history.css')}}/>
+    <!-- Latest compiled and minified CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Latest compiled JavaScript -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         var linkserver = "http://127.0.0.1:5000";
     </script>
+    <style>
+        .modal-dialog {
+            height: 50%; /* = 50% of the .modal-backdrop block = 50% of the screen */
+        }
+        .modal-content {
+          height: 100%; /* = 100% of the .modal-dialog block */
+        }
+        
+        .center {
+            margin: auto;
+        }
+        
+        .billimg{
+            width: 20%;
+            height: 80%;
+            border-radius: 10px;
+            top: 10%;
+            left: 2%;
+        }
+    </style>
   </head>
 <body>
-    <div class = "inforbarhis">
+    <header class="navbar navbar-expand-lg bg-light">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="/">
+				<img width="40" height="40" src="https://upload.wikimedia.org/wikipedia/vi/thumb/7/7e/Logo_KFC.svg/1200px-Logo_KFC.svg.png">
+			</a>
+			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Back to home</a>
+        </li>
+			</ul>
+			<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        {% if current_user.is_authenticated %}
+        <li class="nav-item">
+					<a class="nav-link" data-bs-toggle="offcanvas" href="#offcanvas" role="button" aria-controls="offcanvas">
+						Cart({{ cart | length }})
+					</a>
+        </li>
+
+        
+        <li class="nav-item">
+          <a class="nav-link" href="/logout">Logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="/register">Register</a>
+        </li>
+        {% endif %}
+      </ul>
+
+			<form class="d-flex" action="/search">
+        <input class="form-control me-2" type="text" placeholder="Search food" aria-label="Search" name="query">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+		</div>
+	</header>
+    <!-- <div class = "inforbarhis">
         <h5>Back to home</h5>
     </div>
     
@@ -26,7 +85,7 @@
     <div class = "Logouthis">
         <a class = "a1" href = "#">Profile</a>
         <a href = /logout>Logout</a>
-    </div>
+    </div> -->
     
 
     <div class = "hiscontent">
